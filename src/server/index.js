@@ -9,7 +9,7 @@ import productionConfig from './config/production';
 import midiConfig from '../../data/midi-config';
 
 // application services
-import Midi from './services/Midi';
+// import Midi from './services/Midi';
 
 let config = null;
 

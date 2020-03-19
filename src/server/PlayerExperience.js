@@ -13,7 +13,7 @@ export default class PlayerExperience extends Experience {
     this.audioBufferManager = this.require('audio-buffer-manager');
     this.scheduler = this.require('sync-scheduler');
 
-    this.midi = this.require('midi', midiConfig);
+    // this.midi = this.require('midi', midiConfig);
 
     this.winnersResults = winnersResults;
     this.currentState = null;
@@ -24,14 +24,14 @@ export default class PlayerExperience extends Experience {
     const BPM = this.sharedConfig.get('BPM');
     const beatDuration = 60 / BPM;
 
-    this.midi.addListener('NOTE_ON', (pitch, velocity, msg) => {
-      this.broadcast('player', null, 'note:on', pitch - keyboardOffset);
-      console.log('NOTE_ON: ' + (pitch - keyboardOffset));
-    });
+    // this.midi.addListener('NOTE_ON', (pitch, velocity, msg) => {
+    //   this.broadcast('player', null, 'note:on', pitch - keyboardOffset);
+    //   console.log('NOTE_ON: ' + (pitch - keyboardOffset));
+    // });
 
-    this.midi.addListener('NOTE_OFF', (pitch, velocity, msg) => {
-      this.broadcast('player', null, 'note:off', pitch - keyboardOffset);
-    });
+    // this.midi.addListener('NOTE_OFF', (pitch, velocity, msg) => {
+    //   this.broadcast('player', null, 'note:off', pitch - keyboardOffset);
+    // });
 
     // defer state change to next beat
     this.sharedParams.addParamListener('global:state', (value) => {
