@@ -1,8 +1,8 @@
 # transpiled files and dependencies
 /node_modules
-#/public/js
-#/public/css
-#/dist
+/public/js
+/public/css
+/dist
 
 # ignore all config except default
 /src/server/config/*
