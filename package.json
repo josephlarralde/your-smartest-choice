@@ -12,7 +12,8 @@
     "minify": "node ./bin/runner --minify",
     "start": "node ./bin/runner --start",
     "transpile": "node ./bin/runner --transpile",
-    "watch": "node ./bin/runner --watch"
+    "watch": "node ./bin/runner --watch",
+    "heroku-postbuild": "npm run transpile"
   },
   "repository": {
     "type": "git",
