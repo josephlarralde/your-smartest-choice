@@ -73,96 +73,96 @@ const timeline = [
       },
     ],
   },
-  // {
-  //   id: 'killtheballoon:intempo',
-  //   start: 114954,
-  //   end: 164568, // 2'44.5685
-  //   state: 'killTheBalloons',
-  //   events: [
-  //     {
-  //       name: 'killTheBalloons:showText',
-  //       value: 'On tempo!',
-  //     },
-  //     {
-  //       name: 'killTheBalloons:spawnInterval',
-  //       value: 0.66, // todo : check tempo more precisely
-  //     },
-  //     {
-  //       name: 'killTheBalloons:sizeDiversity',
-  //       value: 0,
-  //     },
-  //   ],
-  // },
-  // {
-  //   id: 'randomcolour',
-  //   start: 164568,
-  //   end: 182324, // 3'02.3249
-  //   state: 'intermezzo', // TODO : eventually replace with something else
-  //   events: [
-  //     {
-  //       name: 'killTheBalloons:showText',
-  //       value: 'none',
-  //     },
-  //   ],
-  // },
-  // {
-  //   id: 'compass2',
-  //   start: 182324,
-  //   end: 210034, // 3'30.0344
-  //   state: 'compass',
-  //   events: [
-  //     {
-  //       name: 'compass:instructions',
-  //       value: 'Walk around',
-  //       // delay: 0,
-  //     },
-  //     {
-  //       name: 'compass:instructions',
-  //       value: 'Stand still',
-  //       delay: 0.25,
-  //     },
-  //     {
-  //       name: 'compass:instructions',
-  //       value: 'Be quiet',
-  //       delay: 0.5,
-  //     },
-  //     {
-  //       name: 'compass:instructions',
-  //       value: 'Listen around',
-  //       delay: 0.75,
-  //     },
-  //   ],
-  // },
-  // {
-  //   id: 'ballooncover',
-  //   start: 210034,
-  //   end: 223370, // 3'43.3707
-  //   state: 'balloonsCover',
-  //   events: [],
-  // },
-  // {
-  //   id: 'killtheballoon:default',
-  //   start: 223370,
-  //   end: 236257, // 3'56.2570
-  //   state: 'killTheBalloons',
-  //   events: [],
-  // },
-  // {
-  //   id: 'avoidtherain',
-  //   start: 236257,
-  //   end: 299749, // 4'59.7495
-  //   state: 'avoidTheRain',
-  //   events: [
-  //     {
-  //       name: 'avoidTheRain:toggleRain',
-  //       value: 'start',
-  //     },
-  //     {
-  //       name: 'avoidTheRain:spawnInterval',
-  //       value: 0.7,
-  //     },
-  //   ],
-  // },
+  {
+    id: 'killtheballoon:intempo',
+    start: 114954,
+    end: 164568, // 2'44.5685
+    state: 'killTheBalloons',
+    events: [
+      {
+        name: 'killTheBalloons:showText',
+        value: 'On tempo!',
+      },
+      {
+        name: 'killTheBalloons:spawnInterval',
+        value: 0.66, // todo : check tempo more precisely
+      },
+      {
+        name: 'killTheBalloons:sizeDiversity',
+        value: 0,
+      },
+    ],
+  },
+  {
+    id: 'randomcolour',
+    start: 164568,
+    end: 182324, // 3'02.3249
+    state: 'intermezzo', // TODO : eventually replace with something else
+    events: [
+      {
+        name: 'killTheBalloons:showText',
+        value: 'none',
+      },
+    ],
+  },
+  {
+    id: 'compass2',
+    start: 182324,
+    end: 210034, // 3'30.0344
+    state: 'compass',
+    events: [
+      {
+        name: 'compass:instructions',
+        value: 'Walk around',
+        // delay: 0,
+      },
+      {
+        name: 'compass:instructions',
+        value: 'Stand still',
+        delay: 0.25,
+      },
+      {
+        name: 'compass:instructions',
+        value: 'Be quiet',
+        delay: 0.5,
+      },
+      {
+        name: 'compass:instructions',
+        value: 'Listen around',
+        delay: 0.75,
+      },
+    ],
+  },
+  {
+    id: 'ballooncover',
+    start: 210034,
+    end: 223370, // 3'43.3707
+    state: 'balloonsCover',
+    events: [],
+  },
+  {
+    id: 'killtheballoon:default',
+    start: 223370,
+    end: 236257, // 3'56.2570
+    state: 'killTheBalloons',
+    events: [],
+  },
+  {
+    id: 'avoidtherain',
+    start: 236257,
+    end: 299749, // 4'59.7495
+    state: 'avoidTheRain',
+    events: [
+      {
+        name: 'avoidTheRain:toggleRain',
+        value: 'start',
+      },
+      {
+        name: 'avoidTheRain:spawnInterval',
+        value: 0.7,
+      },
+    ],
+  },
 ];
 
 class Timeline extends EventEmitter {
