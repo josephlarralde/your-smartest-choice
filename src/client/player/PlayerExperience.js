@@ -97,7 +97,7 @@ class PlayerExperience extends soundworks.Experience {
     // flag to allow waiting for next "wait" state
     this.joined = false;
     // THIS ALLOWS TO FORCE THE USERS TO WAIT FOR THE PIECE TO START TO BE ABLE TO JOIN :
-    this.waitForStartToJoin = false;
+    this.waitForStartToJoin = true;
 
     // configurations
     this.sharedSynthConfig = sharedSynthConfig;
