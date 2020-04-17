@@ -94,8 +94,8 @@ class WaitState {
         const min = parseInt(time / 60);
         const sec = parseInt(time % 60);
         
-        console.log(time);
-        console.log(min + ' ' + sec);
+        // console.log(time);
+        // console.log(min + ' ' + sec);
         
         if (!this.view || !this.view.$el.querySelector('.info')) return;
 
