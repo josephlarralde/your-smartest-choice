@@ -21,6 +21,6 @@ npm-debug.log
 Thumbs.db
 package-lock.json
 
-data
+# data
 
 CONCERT_TODOS.md
