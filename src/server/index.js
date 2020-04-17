@@ -2,6 +2,7 @@ import 'source-map-support/register'; // enable sourcemaps in node
 import * as soundworks from 'soundworks/server';
 import PlayerExperience from './PlayerExperience';
 import ControllerExperience from './ControllerExperience';
+import Timeline from './Timeline';
 
 import defaultConfig from './config/default';
 import productionConfig from './config/production';
@@ -61,6 +62,7 @@ sharedParams.addText('numPlayers', '# players', '0');
 // --------------------------------------
 sharedParams.addNumber('global:volume', 'Volume', 0, 2, 0.001, 1);
 sharedParams.addEnum('global:state', 'State', ['wait', 'compass', 'balloonsCover', 'killTheBalloons', 'intermezzo', 'avoidTheRain', 'scores', 'end'], 'wait');
+sharedParams.addNumber('global:time', 'Time', 0, +Infinity, 0.001, 0);
 
 // --------------------------------------
 // balloon cover
@@ -77,7 +79,7 @@ sharedParams.addEnum('balloonCover:explode', 'BalloonCover - explode', ['none', 
 // balloon cover
 // --------------------------------------
 sharedParams.addText('compass:title', '&nbsp;', 'COMPASS');
-sharedParams.addEnum('compass:instructions', 'Compass - instructions', ['none', 'Walk around', 'Stand still', 'Be quite', 'Listen around'], 'none');
+sharedParams.addEnum('compass:instructions', 'Compass - instructions', ['none', 'Walk around', 'Stand still', 'Be quiet', 'Listen around'], 'none');
 
 // --------------------------------------
 // kill the balloons
@@ -119,12 +121,14 @@ sharedParams.addNumber('score:yellow:transfertRatio', 'Score - Yellow - transfer
 sharedParams.addNumber('score:red:transfertRatio', 'Score - Red - transfertRatio', 0, 1, 0.01, 0);
 sharedParams.addEnum('score:explode', 'Score - Explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
 
-
 // ----------------------------------------------------
 // run application
 // ----------------------------------------------------
 
-const experience = new PlayerExperience('player', midiConfig, winnersResults);
+const timeline = new Timeline(sharedParams);
+const experience = new PlayerExperience('player', midiConfig, winnersResults, timeline);
 const controller = new ControllerExperience('controller');
 
 soundworks.server.start();
+// timeline.start();
+

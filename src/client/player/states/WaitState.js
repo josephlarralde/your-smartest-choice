@@ -9,7 +9,14 @@ const template = `
     </div>
     <div class="section-bottom flex-middle">
       <% if (showText) { %>
-        <p class="small soft-blink">Please wait for the beginning</p>
+        <!-- <p class="small soft-blink">Please wait for the beginning</p> -->
+        <p class="small info">
+          Please wait ...
+          <br>
+          Next session starting in
+          <br>
+          <%= timeLeftText %>
+        </p>
       <% } %>
     </div>
   </div>
@@ -81,14 +88,34 @@ class WaitState {
 
     this._onExploded = this._onExploded.bind(this);
     this.renderer = new BalloonRenderer(this.experience.spriteConfig, this._onExploded);
+
+    if (!this.timeListener) {
+      this.timeListener = this.experience.receive('global:time', (syncTime, time) => {
+        const min = parseInt(time / 60);
+        const sec = parseInt(time % 60);
+        
+        console.log(time);
+        console.log(min + ' ' + sec);
+        
+        if (!this.view || !this.view.$el.querySelector('.info')) return;
+
+        this.view.model.timeLeftText = `${min}'${("0" + sec).slice(-2)}''`;
+        this.view.render('.info');
+      });
+    }
   }
 
   enter() {
     this.view = new CanvasView(template, {
-      showText: true
+      showText: true,
+      timeLeftText: '',
     }, {}, {
       className: ['wait-state', 'foreground']
     });
+
+    // update timeLeft like this :
+    // this.view.model.timeLeftText = '4\'33\'\'';
+    // this.view.render('.info');
 
     this.view.render();
     this.view.show();
@@ -99,6 +126,15 @@ class WaitState {
     });
 
     this.view.addRenderer(this.renderer);
+
+    // this.timeListener = this.experience.sharedParams.addParamListener('global:time', time => {
+    //   const min = parseInt(time / 60);
+    //   const sec = parseInt(time % 60);
+    //   // console.log(time);
+    //   // console.log(min + ' ' + sec);
+    //   this.view.model.timeLeftText = `${min}'${sec}''`;
+    //   this.view.render('.info');
+    // });
   }
 
   exit() {
@@ -109,6 +145,8 @@ class WaitState {
     this.view.render('.section-bottom');
     // make the balloon explode, wait for
     this.renderer.explode();
+
+    this.experience.sharedParams.removeParamListener('global:time', this.timeListener);
   }
 
   _onExploded() {

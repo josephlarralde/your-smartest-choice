@@ -9,6 +9,7 @@ import sharedSynthConfig from '../../../data/shared-synth-config.json';
 import areaConfig from '../../../data/area-config.json';
 import killTheBalloonsConfig from '../../../data/kill-the-balloons-config.json';
 import avoidTheRainConfig from '../../../data/avoid-the-rain-config.json';
+import instrumentalConfig from '../../../data/instrumental-config.json';
 
 // states
 import WaitState from './states/WaitState';
@@ -36,15 +37,22 @@ const states = {
 
 const globalState = {
   score: { red: 0, blue: 0, pink: 0, yellow: 0 },
+  mute: false,
 };
 
 const viewTemplate = `
   <canvas class="background"></canvas>
   <div id="shared-visual-container" class="background"></div>
   <div id="state-container" class="foreground"></div>
+  <div id="mute" class="mute-btn"></div>
+  <div id="shared-visual-container"></div>
 `;
 
 class PlayerView extends soundworks.CanvasView {
+  constructor(template, content, events, options) {
+    super(template, content, events, options);
+  }
+
   onRender() {
     super.onRender();
 
@@ -86,6 +94,11 @@ class PlayerExperience extends soundworks.Experience {
   constructor(assetsDomain) {
     super();
 
+    // flag to allow waiting for next "wait" state
+    this.joined = false;
+    // THIS ALLOWS TO FORCE THE USERS TO WAIT FOR THE PIECE TO START TO BE ABLE TO JOIN :
+    this.waitForStartToJoin = false;
+
     // configurations
     this.sharedSynthConfig = sharedSynthConfig;
     this.sharedVisualsConfig = sharedVisualsConfig;
@@ -93,6 +106,7 @@ class PlayerExperience extends soundworks.Experience {
     this.areaConfig = areaConfig;
     this.killTheBalloonsConfig = killTheBalloonsConfig;
     this.avoidTheRainConfig = avoidTheRainConfig;
+    this.instrumentalConfig = instrumentalConfig;
 
     // -------------------------------------------
     // prepare paths for audio files
@@ -114,6 +128,10 @@ class PlayerExperience extends soundworks.Experience {
       return `sounds/avoid-the-rain/${filename}`;
     });
 
+    const instrumentalMusic = instrumentalConfig.files.map((filename) => {
+      return `sounds/instrumental/${filename}`;
+    });
+
     // -------------------------------------------
 
     const audioFiles = {
@@ -121,6 +139,7 @@ class PlayerExperience extends soundworks.Experience {
       'kill-the-balloons': killTheBalloonsFiles,
       'avoid-the-rain:sines': avoidTheRainSines,
       'avoid-the-rain:glitches': avoidTheRainGlitches,
+      'instrumental-music': instrumentalMusic,
     };
 
     this.platform = this.require('platform', { features: ['web-audio', 'device-sensor'] });
@@ -154,6 +173,7 @@ class PlayerExperience extends soundworks.Experience {
     this._onCompassUpdate = this._onCompassUpdate.bind(this);
     this._setVolume = this._setVolume.bind(this);
     this._onSharedVisualTrigger = this._onSharedVisualTrigger.bind(this);
+    this._onTouchStart = this._onTouchStart.bind(this);
 
     this._accelerationListeners = new Set();
     this._compassListeners = {};
@@ -176,12 +196,35 @@ class PlayerExperience extends soundworks.Experience {
     this.spriteConfig.colors = Object.keys(this.spriteConfig.groups);
 
     // initialize the view
-    this.view = new PlayerView(viewTemplate, {}, {}, {
+    this.view = new PlayerView(viewTemplate, {}, {
+      // '#mute touchstart': (e) => { this._onTouchStart(e) },
+    }, {
       preservePixelRatio: false,
       ratios: { '#state-container': 1 },
     });
 
     this.show().then(() => {
+      // this allows mute btn to stay reactive through state changes
+      // (don't ask why)
+      this.$muteBtn = document.querySelector('#mute');
+      this.$muteBtn.addEventListener('touchstart', () => {
+        const active = this.$muteBtn.classList.contains('on');
+        console.log('active : ' + (active ? 'yes' : 'no'));
+
+        if (active) {
+          this.$muteBtn.classList.remove('on');
+          this.mute.gain.value = 1;
+        } else {
+          this.$muteBtn.classList.add('on');
+          this.mute.gain.value = 0;
+        }
+      }, { passive: true });
+
+      // audio api
+      this.mute = audioContext.createGain();
+      this.mute.gain.value = 1;
+      this.mute.connect(audioContext.destination);
+
       // master audio
       this.master = audioContext.createGain();
       this.master.connect(audioContext.destination);
@@ -234,9 +277,28 @@ class PlayerExperience extends soundworks.Experience {
       this.sharedParams.addParamListener('global:volume', this._setVolume);
       this.sharedParams.addParamListener('global:shared-visual', this._onSharedVisualTrigger);
 
-      this.receive('global:state', (syncTime, state) => {
-        this.scheduler.defer(() => this._setState(state), syncTime);
+      this.receive('state:index', index => {
+        if (index === 0) {
+          this.joined = true;
+        }
+
+        this._playInstrumentalPart(index);
       });
+
+      this.receive('global:state', (syncTime, state) => {
+        if ((this.waitForStartToJoin && this.joined) || !this.waitForStartToJoin) {
+          if (this.currentState !== state) {
+            this.scheduler.defer(() => this._setState(state), syncTime);
+            this.currentState = state;
+          }
+        }
+      });
+
+      this.currentState = 'wait';
+
+      if (this.waitForStartToJoin) {
+        this._setState(this.currentState);
+      }
     });
   }
 
@@ -244,11 +306,40 @@ class PlayerExperience extends soundworks.Experience {
     return this.master;
   }
 
+  _playInstrumentalPart(index, time = null) {
+    console.log('playing part ' + index);
+    // const index = Math.floor(Math.random() * this.backgroundBuffers.length);
+    const buffer = this.audioBufferManager.get('instrumental-music')[index];
+    // const buffer = this.backgroundBuffers[index];
+    const duration = buffer.duration;
+    const now = time || audioContext.currentTime;
+    // const detune = (Math.random() * 2 - 1) * 1200;
+    // const resampling = Math.random() * 1.5 + 0.5;
+
+    const src = audioContext.createBufferSource();
+    src.buffer = buffer;
+
+    // const gain = audioContext.createGain();
+    // gain.value = 1;
+
+    src.connect(this.mute);
+    // gain.connect(this.getAudioDestination());
+    // src.playbackRate.value = resampling;
+    src.start(now);
+    src.stop(now + duration);    
+  }
+
+  _onTouchStart(e) {
+    console.log('touched !')
+  }
+
   _setVolume(value) {
     this.master.gain.value = value;
   }
 
   _setState(name) {
+    console.log('setting state ' + name);
+
     const ctor = states[name];
 
     if (!ctor)

@@ -32,10 +32,28 @@ window.addEventListener('load', () => {
       return soundworks.client.platform.isMobile; // true if phone or tablet
     },
     interactionHook() {
+      // console.log(soundworks.client.platform.os);
+      // console.log(DeviceMotionEvent);
+      // console.log(window.DeviceMotionEvent);
+      // DeviceMotionEvent.requestPermission().then(response => {
+      //   console.log(response);
+      // });
+      // window.addEventListener('devicemotion', e => {
+      //   console.log(e);
+      // });
+      // return Promise.resolve(true);
+      /*
+        if (typeof window.DeviceMotionEvent.requestPermission === 'function') {
+          console.log(window.DeviceMotionEvent.requestPermission());
+        }
+      //*/
+
+      //*
       return new Promise((resolve, reject) => {
         if (typeof window.DeviceMotionEvent.requestPermission === 'function') {
           window.DeviceMotionEvent.requestPermission()
             .then(response => {
+              console.log(response);
               if (response == 'granted') {
                 resolve(true);
               } else {
@@ -49,6 +67,7 @@ window.addEventListener('load', () => {
           resolve(true);
         }
       });
+      //*/
     }
   });
 
