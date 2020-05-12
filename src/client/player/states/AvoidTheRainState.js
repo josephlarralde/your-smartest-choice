@@ -311,6 +311,9 @@ class AvoidTheRainState {
     this.view.show();
     this.view.appendTo(this.experience.view.getStateContainer());
 
+    // uncomment this to hide score permanently from "avoid the rain"
+    // this.view.hideScore();
+
     const instructionsDuration = 10;
     let instructionsTime = 0;
 

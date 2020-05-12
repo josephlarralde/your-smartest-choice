@@ -1,8 +1,9 @@
 import { Experience } from 'soundworks/server';
+import Timeline from './Timeline';
 
 // server-side 'player' experience.
 export default class PlayerExperience extends Experience {
-  constructor(clientType, midiConfig, winnersResults, timeline) {
+  constructor(clientType, midiConfig, winnersResults) {
     super(clientType);
 
     this.checkin = this.require('checkin');
@@ -16,7 +17,6 @@ export default class PlayerExperience extends Experience {
     // this.midi = this.require('midi', midiConfig);
 
     this.winnersResults = winnersResults;
-    this.timeline = timeline;
     this.setTimeout = null;
     this.currentState = null;
   }
@@ -44,55 +44,16 @@ export default class PlayerExperience extends Experience {
       this.broadcast('player', null, 'global:state', triggerAt, value);
     });
 
+    this.timeline = new Timeline(this.sharedParams, this.sync);
     this.timeline.start();
     this.timeline.on('index', (index) => {
-      console.log(`state index ${index}`);
+      // console.log(`state index ${index}`);
       this.broadcast('player', null, 'state:index', index);
     });
 
-    this.startTime = this.sync.getSyncTime();
-    this.lastTime = this.startTime;
-    this.cumulatedTime = 0;
-    this.pollInterval = 1;
-    this.lastInterval = this.pollInterval;
-
-    this._setTimeout = () => {
-      const syncTime = this.sync.getSyncTime();
-      const totalTime = syncTime - this.startTime;
-      const timelineTotalSecDuration = this.timeline.totalDuration * 0.001;
-
-      if (totalTime >= timelineTotalSecDuration) {
-        this.startTime += timelineTotalSecDuration;
-        this.cumulatedTime = totalTime - timelineTotalSecDuration;
-      }
-
-      const delta = syncTime - this.lastTime;
-      let nextInterval = this.pollInterval;
-
-      if (delta < this.lastInterval) {
-        nextInterval = this.lastInterval - delta;
-      }
-
-      if (delta > this.lastInterval && delta < 2 * this.lastInterval) {
-        this.cumulatedTime += this.pollInterval;
-        const realTime = syncTime - this.startTime;
-        const diff = realTime - this.cumulatedTime;
-
-        nextInterval = this.pollInterval - diff;
-        this.lastInterval = nextInterval;
-        this.lastTime = syncTime;
-
-        // if (totalTime >= this.timeline.totalDuration) {
-        //   this.lastTime
-        // }
-
-        this.broadcast('player', null, 'global:time', syncTime, timelineTotalSecDuration - totalTime);
-      }
-
-      setTimeout(this._setTimeout, nextInterval);
-    };
-
-    this._setTimeout();
+    this.timeline.on('countdown', (timeLeft) => {
+      this.broadcast('player', null, 'global:time', timeLeft);
+    });
   }
 
   enter(client) {
@@ -104,6 +65,8 @@ export default class PlayerExperience extends Experience {
     });
 
     this.sharedParams.update('numPlayers', this.clients.length);
+    this.send(client, 'timeline:position', this.timeline.index, this.timeline.getIndexElapsedTime());
+    // this.send(client, 'state:index', this.timeline.index);
 
     // ugly hack...
     setTimeout(() => {

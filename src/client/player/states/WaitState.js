@@ -86,36 +86,20 @@ class WaitState {
     this.experience = experience;
     this.globalState = globalState;
 
+    this._showingCredits = false;
+    this._timeListener = this._timeListener.bind(this);
     this._onExploded = this._onExploded.bind(this);
     this.renderer = new BalloonRenderer(this.experience.spriteConfig, this._onExploded);
-
-    if (!this.timeListener) {
-      this.timeListener = this.experience.receive('global:time', (syncTime, time) => {
-        const min = parseInt(time / 60);
-        const sec = parseInt(time % 60);
-        
-        // console.log(time);
-        // console.log(min + ' ' + sec);
-        
-        if (!this.view || !this.view.$el.querySelector('.info')) return;
-
-        this.view.model.timeLeftText = `${min}'${("0" + sec).slice(-2)}''`;
-        this.view.render('.info');
-      });
-    }
   }
 
   enter() {
+    this._showingCredits = false;
     this.view = new CanvasView(template, {
       showText: true,
       timeLeftText: '',
     }, {}, {
       className: ['wait-state', 'foreground']
     });
-
-    // update timeLeft like this :
-    // this.view.model.timeLeftText = '4\'33\'\'';
-    // this.view.render('.info');
 
     this.view.render();
     this.view.show();
@@ -126,6 +110,8 @@ class WaitState {
     });
 
     this.view.addRenderer(this.renderer);
+
+    this.experience.receive('global:time', this._timeListener);
 
     // this.timeListener = this.experience.sharedParams.addParamListener('global:time', time => {
     //   const min = parseInt(time / 60);
@@ -138,6 +124,8 @@ class WaitState {
   }
 
   exit() {
+    this.experience.stopReceiving('global:time', this._timeListener);
+
     this.view.$el.classList.remove('foreground');
     this.view.$el.classList.add('background');
 
@@ -146,7 +134,29 @@ class WaitState {
     // make the balloon explode, wait for
     this.renderer.explode();
 
-    this.experience.sharedParams.removeParamListener('global:time', this.timeListener);
+    // this.experience.sharedParams.removeParamListener('global:time', this.timeListener);
+    if (this._showingCredits) {
+      this.experience.showCreditsPage(0);
+      this._showingCredits = false;
+    }
+  }
+
+  _timeListener(remaining) {
+    const min = parseInt(Math.round(remaining) / 60);
+    const sec = parseInt(Math.round(remaining) % 60);
+
+    console.log(`${min} m ${sec} s`);
+    console.log(this._showingCredits);
+
+    if (min === 0 && sec <= 30 && !this._showingCredits) {
+      this.experience.showCreditsPage(1);
+      this._showingCredits = true;
+    }
+    
+    if (!this.view || !this.view.$el.querySelector('.info')) return;
+
+    this.view.model.timeLeftText = `${min}'${("0" + sec).slice(-2)}''`;
+    this.view.render('.info');
   }
 
   _onExploded() {

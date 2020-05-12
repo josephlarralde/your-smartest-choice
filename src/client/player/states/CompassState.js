@@ -11,7 +11,9 @@ const template = `
       <% } %>
     </div>
     <div class="section-bottom flex-middle">
-      <p class="small">Use the compass to choose<br />your instrument</p>
+      <!-- <p class="small">Use the compass to choose<br />your instrument</p> -->
+      <!-- <p class="small">Turn the phone<br />360°</p> -->
+      <p class="small">Use the compass to <br /> choose the colour</p>
     </div>
   </div>
 `;

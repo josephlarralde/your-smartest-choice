@@ -79,7 +79,8 @@ sharedParams.addEnum('balloonCover:explode', 'BalloonCover - explode', ['none', 
 // balloon cover
 // --------------------------------------
 sharedParams.addText('compass:title', '&nbsp;', 'COMPASS');
-sharedParams.addEnum('compass:instructions', 'Compass - instructions', ['none', 'Walk around', 'Stand still', 'Be quiet', 'Listen around'], 'none');
+// sharedParams.addEnum('compass:instructions', 'Compass - instructions', ['none', 'Walk around', 'Stand still', 'Be quiet', 'Listen around'], 'none');
+sharedParams.addEnum('compass:instructions', 'Compass - instructions', ['none', 'Use the compass to choose the colour'], 'none');
 
 // --------------------------------------
 // kill the balloons
@@ -89,7 +90,8 @@ sharedParams.addEnum('killTheBalloons:samplesSet', 'KillTheBalloons - samplesSet
 sharedParams.addNumber('killTheBalloons:spawnInterval', 'KillTheBalloons - spawnInterval', 0, 10, 0.001, 0.15);
 sharedParams.addNumber('killTheBalloons:sizeDiversity', 'KillTheBalloons - sizeDiversity', 0, 1, 0.001, 0);
 
-sharedParams.addEnum('killTheBalloons:showText', 'KillTheBalloons - showText', ['none', 'On tempo!', 'da da dadada', 'Follow the Rhythm', 'Create a melody'], 'none');
+// sharedParams.addEnum('killTheBalloons:showText', 'KillTheBalloons - showText', ['none', 'On tempo!', 'da da dadada', 'Follow the Rhythm', 'Create a melody'], 'none');
+sharedParams.addEnum('killTheBalloons:showText', 'KillTheBalloons - showText', ['none', 'Create your rhythm', 'Random colour', 'In tempo'], 'none');
 
 sharedParams.addEnum('killTheBalloons:clickColorText', 'killTheBalloons - text "click the"', ['none', 'blue', 'pink', 'yellow', 'red', 'random'], 'none');
 
@@ -125,8 +127,8 @@ sharedParams.addEnum('score:explode', 'Score - Explode', ['none', 'blue', 'pink'
 // run application
 // ----------------------------------------------------
 
-const timeline = new Timeline(sharedParams);
-const experience = new PlayerExperience('player', midiConfig, winnersResults, timeline);
+// const timeline = new Timeline(sharedParams);
+const experience = new PlayerExperience('player', midiConfig, winnersResults);
 const controller = new ControllerExperience('controller');
 
 soundworks.server.start();

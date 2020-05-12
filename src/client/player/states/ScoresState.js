@@ -329,6 +329,10 @@ class ScoresState {
     sharedParams.addParamListener('score:yellow:transfertRatio', this._onYellowTransfertRatioUpdate);
     sharedParams.addParamListener('score:red:transfertRatio', this._onRedTransfertRatioUpdate);
     sharedParams.addParamListener('score:explode', this._onExplode);
+
+    this.creditsTimeout = setTimeout(() => {
+      this.experience.showCreditsPage(2);
+    }, 7000);
   }
 
   exit() {
@@ -347,6 +351,8 @@ class ScoresState {
     sharedParams.removeParamListener('score:explode', this._onExplode);
 
     this.experience.removeListener('global:score', this._onGlobalScoreResponse);
+    clearTimeout(this.creditsTimeout);
+    this.experience.showCreditsPage(0);
   }
 
   _onGlobalScoreResponse(globalScore) {

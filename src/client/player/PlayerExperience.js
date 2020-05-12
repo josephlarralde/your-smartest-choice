@@ -41,10 +41,38 @@ const globalState = {
 };
 
 const viewTemplate = `
+  <div id="menu">
+    <div id="mute" class="mute-btn"></div>
+    <div id="exit" class="exit-btn"></div>
+  </div>
   <canvas class="background"></canvas>
+  <div class="credits-wrapper hidden">
+    <div id="credits-1" class="credits small hidden">
+      <div class="bold normal">
+        Huihui Cheng <br />
+        Your smartest choice
+      </div>
+      <br />
+      <span class="bold">Original application</span>
+      <ul style="padding: 0;">
+        <li>Benjamin Matuszewski</li>
+        <li>Norbert Schnell</li>
+        <li>(IRCAM)</li>
+      </ul>
+      <span class="bold">Online adaptation</span>
+      <ul style="padding: 0;"><li> Joseph Larralde </li></ul>
+    </div>
+    <div id="credits-2" class="credits small hidden">
+      <span class="bold normal"> Ensemble Mosaik </span> <br />
+      Chatschatur Kanajan, Violin <br />
+      Karen Lorenz, Viola <br />
+      Christian Vogel, Clarinet <br />
+      Ernst Surberg, Piano <br /><br />
+      <img src="/images/prod-logo.png" style="width: 250px;" />
+    </div>
+  </div>
   <div id="shared-visual-container" class="background"></div>
   <div id="state-container" class="foreground"></div>
-  <div id="mute" class="mute-btn"></div>
   <div id="shared-visual-container"></div>
 `;
 
@@ -96,6 +124,8 @@ class PlayerExperience extends soundworks.Experience {
 
     // flag to allow waiting for next "wait" state
     this.joined = false;
+    this.index = 0;
+
     // THIS ALLOWS TO FORCE THE USERS TO WAIT FOR THE PIECE TO START TO BE ABLE TO JOIN :
     this.waitForStartToJoin = true;
 
@@ -182,7 +212,7 @@ class PlayerExperience extends soundworks.Experience {
   start() {
     super.start();
 
-        // populate spriteConfig with the sprite images
+    // populate spriteConfig with the sprite images
     this.spriteConfig.groups.blue.image = this.imageManager.getAsCanvas('sprite:blue');
     this.spriteConfig.groups.pink.image = this.imageManager.getAsCanvas('sprite:pink');
     this.spriteConfig.groups.yellow.image = this.imageManager.getAsCanvas('sprite:yellow');
@@ -196,14 +226,19 @@ class PlayerExperience extends soundworks.Experience {
     this.spriteConfig.colors = Object.keys(this.spriteConfig.groups);
 
     // initialize the view
-    this.view = new PlayerView(viewTemplate, {}, {
-      // '#mute touchstart': (e) => { this._onTouchStart(e) },
-    }, {
+    this.view = new PlayerView(viewTemplate, {}, {}, {
       preservePixelRatio: false,
       ratios: { '#state-container': 1 },
     });
 
     this.show().then(() => {
+
+      this.$exitBtn = document.querySelector('#exit');
+      this.$exitBtn.addEventListener('touchstart', () => {
+        this.joined = false;
+        this._setState('wait');
+      });
+
       // this allows mute btn to stay reactive through state changes
       // (don't ask why)
       this.$muteBtn = document.querySelector('#mute');
@@ -219,6 +254,10 @@ class PlayerExperience extends soundworks.Experience {
           this.mute.gain.value = 0;
         }
       }, { passive: true });
+
+      this.$creditsWrapper = document.querySelector('.credits-wrapper');
+      this.$credits1 = document.querySelector('#credits-1');
+      this.$credits2 = document.querySelector('#credits-2');
 
       // audio api
       this.mute = audioContext.createGain();
@@ -277,12 +316,23 @@ class PlayerExperience extends soundworks.Experience {
       this.sharedParams.addParamListener('global:volume', this._setVolume);
       this.sharedParams.addParamListener('global:shared-visual', this._onSharedVisualTrigger);
 
+      this.receive('timeline:position', (index, totalTime) => {
+        console.log(index);
+        console.log(totalTime);
+        this._playInstrumentalPart(index, totalTime);
+      });
+
       this.receive('state:index', index => {
         if (index === 0) {
           this.joined = true;
+          globalState.score = { red: 0, blue: 0, pink: 0, yellow: 0 };
         }
 
-        this._playInstrumentalPart(index);
+        // or uncomment this if and play current part from current position when clients join
+        // like this, remains silent
+        // if (this.joined) {
+          this._playInstrumentalPart(index);
+        // }
       });
 
       this.receive('global:state', (syncTime, state) => {
@@ -306,13 +356,27 @@ class PlayerExperience extends soundworks.Experience {
     return this.master;
   }
 
-  _playInstrumentalPart(index, time = null) {
+  showCreditsPage(pageId = 0) {
+    if (pageId === 1 && this.currentState === 'wait') {
+      this.$credits2.classList.add('hidden');
+      this.$credits1.classList.remove('hidden');
+      this.$creditsWrapper.classList.remove('hidden');
+    } else if (pageId === 2 && this.currentState === 'scores') {
+      this.$credits1.classList.add('hidden');
+      this.$credits2.classList.remove('hidden');
+      this.$creditsWrapper.classList.remove('hidden');
+    } else {
+      this.$creditsWrapper.classList.add('hidden');
+    }
+  }
+
+  _playInstrumentalPart(index, bufferOffset = 0) {
     console.log('playing part ' + index);
     // const index = Math.floor(Math.random() * this.backgroundBuffers.length);
     const buffer = this.audioBufferManager.get('instrumental-music')[index];
     // const buffer = this.backgroundBuffers[index];
-    const duration = buffer.duration;
-    const now = time || audioContext.currentTime;
+    const duration = buffer.duration - bufferOffset;
+    const now = audioContext.currentTime;
     // const detune = (Math.random() * 2 - 1) * 1200;
     // const resampling = Math.random() * 1.5 + 0.5;
 
@@ -325,8 +389,8 @@ class PlayerExperience extends soundworks.Experience {
     src.connect(this.mute);
     // gain.connect(this.getAudioDestination());
     // src.playbackRate.value = resampling;
-    src.start(now);
-    src.stop(now + duration);    
+    src.start(now, bufferOffset, duration); // offset in seconds
+    // src.stop(now + duration);    
   }
 
   _onTouchStart(e) {
@@ -339,7 +403,6 @@ class PlayerExperience extends soundworks.Experience {
 
   _setState(name) {
     console.log('setting state ' + name);
-
     const ctor = states[name];
 
     if (!ctor)
@@ -354,6 +417,18 @@ class PlayerExperience extends soundworks.Experience {
     this._state = state;
     this._state.enter();
     this._currentStateName = name;
+    this.currentState = name;
+
+    // display exit button when we are not waiting
+    // NOPE ! this removes event listeners :(
+    // this.view.model.showExitBtn = (name !== 'wait');
+    // this.view.render('#menu');
+
+    if (name === 'wait') {
+      this.$exitBtn.classList.add('hidden');
+    } else {
+      this.$exitBtn.classList.remove('hidden');
+    }
   }
 
   _onSharedVisualTrigger(value) {
