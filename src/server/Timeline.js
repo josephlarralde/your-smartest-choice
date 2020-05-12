@@ -255,11 +255,6 @@ const timeline = [
       },
       {
         name: 'score:explode',
-        value: 'red',
-        delay: 6900,
-      },
-      {
-        name: 'score:explode',
         value: 'blue',
         delay: 5000,
       },
@@ -272,6 +267,11 @@ const timeline = [
         name: 'score:explode',
         value: 'yellow',
         delay: 6500,
+      },
+      {
+        name: 'score:explode',
+        value: 'red',
+        delay: 6900,
       },
       {
         name: 'score:explode',
