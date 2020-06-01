@@ -23,6 +23,7 @@ class ControllerExperience extends Experience {
 
     // compass
     this.setGuiOptions('compass:instructions', { type: 'buttons' });
+    this.setGuiOptions('compass:enableRandomMIDINotes', { type: 'buttons' });
 
     // balloon cover
     this.setGuiOptions('balloonCover:explode', { type: 'buttons' });
@@ -50,6 +51,21 @@ class ControllerExperience extends Experience {
     this.setGuiOptions('score:red:transfertRatio', { type: 'slider', size: 'large' });
 
     this.setGuiOptions('score:explode', { type: 'buttons' });
+
+    this.setGuiOptions('midi:note:01', { type: 'buttons' });
+    this.setGuiOptions('midi:note:02', { type: 'buttons' });
+    this.setGuiOptions('midi:note:03', { type: 'buttons' });
+    this.setGuiOptions('midi:note:04', { type: 'buttons' });
+    this.setGuiOptions('midi:note:05', { type: 'buttons' });
+    this.setGuiOptions('midi:note:06', { type: 'buttons' });
+    this.setGuiOptions('midi:note:07', { type: 'buttons' });
+    this.setGuiOptions('midi:note:08', { type: 'buttons' });
+    this.setGuiOptions('midi:note:09', { type: 'buttons' });
+    this.setGuiOptions('midi:note:10', { type: 'buttons' });
+    this.setGuiOptions('midi:note:11', { type: 'buttons' });
+    this.setGuiOptions('midi:note:12', { type: 'buttons' });
+    this.setGuiOptions('midi:note:13', { type: 'buttons' });
+    this.setGuiOptions('midi:note:14', { type: 'buttons' });
 
     if (options.auth)
       this.auth = this.require('auth');

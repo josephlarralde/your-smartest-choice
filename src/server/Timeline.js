@@ -5,26 +5,49 @@ import EventEmitter from 'events';
 
 const timeline = [
   {
-    id: '1_compass',
+    id: '0_beginning',
     start: 0,
-    end: 41219,
+    end: 20000,
+    state: 'empty',
+    events: [],
+  },
+  {
+    id: '1_compass',
+    // start: 0,
+    // end: 41219,
+    start: 20000,
+    end: 61219,
     state: 'compass',
     events: [
-      // {
-      //   name: 'compass:instructions',
-      //   value: 'Use the compass to choose the colour',
-      // },
+      {
+        name: 'compass:instructions',
+        value: 'Use the compass to <br> choose the colour',
+      },
+      {
+        name: 'compass:enableRandomMIDINotes',
+        value: 'on',
+      },
     ],
   },
   {
     id: '2_killtheballoon_intro',
-    start: 41219,
-    end: 114570, // 1'54.570
+    // start: 41219,
+    // end: 114570, // 1'54.570
+    start: 61219,
+    end: 134570, // 1'54.570
     state: 'killTheBalloons',
     events: [
       {
+        name: 'compass:enableRandomMIDINotes',
+        value: 'off',
+      },
+      {
         name: 'killTheBalloons:showText',
-        value: '',
+        value: 'Hit the balloons!',
+      },
+      {
+        name: 'killTheBalloons:clickColorText',
+        value: 'none',
       },
       {
         name: 'killTheBalloons:spawnInterval',
@@ -33,6 +56,11 @@ const timeline = [
       {
         name: 'killTheBalloons:sizeDiversity',
         value: 0,
+      },
+      {
+        name: 'killTheBalloons:showText',
+        value: 'none',
+        delay: 3000,
       },
       // NEXT CUE
       {
@@ -77,7 +105,12 @@ const timeline = [
       // NEXT CUE
       {
         name: 'killTheBalloons:showText',
-        value: 'Random colour',
+        value: 'none', // 'Random colour',
+        delay: 69322,
+      },
+      {
+        name: 'killTheBalloons:clickColorText',
+        value: 'random',
         delay: 69322,
       },
       {
@@ -87,10 +120,15 @@ const timeline = [
       },
     ],
   },
+// ];
+
+// const machin = [
   {
     id: '3_killtheballoon_intempo',
-    start: 114570,
-    end: 163823, // 2'43.823
+    // start: 114570,
+    // end: 163823, // 2'43.823
+    start: 134570,
+    end: 183823, // 2'43.823
     state: 'killTheBalloons',
     events: [
       {
@@ -98,8 +136,16 @@ const timeline = [
         value: 'In tempo',
       },
       {
+        name: 'killTheBalloons:clickColorText',
+        value: 'none',
+      },
+      {
         name: 'killTheBalloons:spawnInterval',
-        value: 0.66,
+        value: 0.5,
+      },
+      {
+        name: 'killTheBalloons:samplesSet',
+        value: 0,
       },
       {
         name: 'killTheBalloons:sizeDiversity',
@@ -107,38 +153,75 @@ const timeline = [
       },
       // {
       //   name: 'killTheBalloons:showText',
-      //   value: '',
+      //   value: 'none',
       //   delay: 3000,
       // },
       {
         name: 'killTheBalloons:showText',
-        value: 'Random colour',
+        value: 'none',
         delay: 21635,
       },
       {
+        name: 'killTheBalloons:clickColorText',
+        value: 'random',
+        delay: 21635,
+      },
+      // MORE AND MORE BALLOONS
+      {
         name: 'killTheBalloons:spawnInterval',
-        value: 0.33,
+        value: 0.5,
         delay: 39293,
+      },
+      {
+        name: 'killTheBalloons:spawnInterval',
+        value: 0.3,
+        delay: 42000,
+      },
+      {
+        name: 'killTheBalloons:spawnInterval',
+        value: 0.15,
+        delay: 45000,
       },
     ],
   },
   {
     id: '4_compass',
-    start: 163823,
-    end: 173263, // 2'53.263
+    // start: 163823,
+    // end: 173263, // 2'53.263
+    start: 183823,
+    end: 193263, // 2'53.263
     state: 'compass',
     events: [
+      {
+        name: 'compass:instructions',
+        value: 'none',
+      },
+      {
+        name: 'compass:enableRandomMIDINotes',
+        value: 'on',
+      },
     ],
   },
   {
     id: '5_killtheballoon_few',
-    start: 173263,
-    end: 202602, // 3'22.602
+    // start: 173263,
+    // end: 202602, // 3'22.602
+    start: 193263,
+    end: 222602, // 3'22.602
     state: 'killTheBalloons',
     events: [
       {
+        name: 'compass:enableRandomMIDINotes',
+        value: 'off',
+      },
+      {
         name: 'killTheBalloons:showText',
         value: 'none',
+      },
+      {
+        name: 'killTheBalloons:clickColorText',
+        value: 'none',
+        delay: 21635,
       },
       {
         name: 'killTheBalloons:samplesSet',
@@ -152,8 +235,10 @@ const timeline = [
   },
   {
     id: '6_ballooncover',
-    start: 202602,
-    end: 212571, // 3'32.571
+    // start: 202602,
+    // end: 212571, // 3'32.571
+    start: 222602,
+    end: 232571, // 3'32.571
     state: 'balloonsCover',
     events: [
       {
@@ -175,8 +260,10 @@ const timeline = [
   },
   {
     id: '7_killtheballoon_ending',
-    start: 212571,
-    end: 225458, // 3'45.458
+    // start: 212571,
+    // end: 225458, // 3'45.458
+    start: 232571,
+    end: 245458, // 3'45.458
     state: 'killTheBalloons',
     events: [
       {
@@ -191,8 +278,10 @@ const timeline = [
   },
   {
     id: '8_avoidtherain',
-    start: 225458,
-    end: 274714, // 4'34.714
+    // start: 225458,
+    // end: 274714, // 4'34.714
+    start: 245458,
+    end: 294714, // 4'34.714
     state: 'avoidTheRain',
     events: [
       // beginning
@@ -233,8 +322,10 @@ const timeline = [
   },
   {
     id: '9_score',
-    start: 274714, 
-    end: 288950, // 4'48.950
+    // start: 274714, 
+    // end: 288950, // 4'48.950
+    start: 294714, 
+    end: 308950, // 4'48.950
     state: 'scores',
     events: [
       {
@@ -462,6 +553,14 @@ class Timeline extends EventEmitter {
 
     this.triggerNextEvent = this.triggerNextEvent.bind(this);
     this.tickClock = this.tickClock.bind(this);
+
+    // according to huihui's score
+    this.midiMap = [ 3, 4, 5, 11, 14, 15, 16, 17, 22, 29, 31, 32, 34, 46 ];
+    this.midiMap.forEach((m, i) => {
+      this.midiMap[i] = [ `midi:note:${("0" + (i + 1)).slice(-2)}`, m ];
+    });
+    this.currentMidiNotes = [];
+    this.midiTimeout = null;
   }
 
   start() {
@@ -537,8 +636,55 @@ class Timeline extends EventEmitter {
     setTimeout(this.tickClock, nextInterval * 10);
   }
 
+  enableRandomMidiNotesGenerator(enable) {
+    if (enable === true) {
+      this.triggerNextMidiNotes();
+    } else if (enable === false) {
+      clearTimeout(this.midiTimeout);
+      this.midiTimeout = null;
+      this.stopAllMidiNotes();
+    }
+  }
+
+  stopAllMidiNotes() {
+    this.currentMidiNotes.forEach((index) => {
+      this.sharedParams.update(this.midiMap[index][0], 'off');
+    });
+    this.currentMidiNotes = [];
+  }
+
+  triggerNextMidiNotes() {
+    this.stopAllMidiNotes();
+
+    // we create an index array to pick random indexes from
+    let indexes = [];
+    for (let i = 0; i < this.midiMap.length; i++) {
+      indexes.push(i);
+    }
+
+    // we pick an index from the index array,
+    // then remove it from the index array
+    // to avoid picking the same index twice
+    const n = Math.floor(Math.random() * 5); // enable 0 to 4 random notes
+
+    for (let i = 0; i < n; i++) {
+      const r = Math.floor(Math.random() * indexes.length);
+      this.currentMidiNotes.push(indexes[r]);
+      indexes.splice(r, 1);
+    }
+
+    this.currentMidiNotes.forEach((index) => {
+      this.sharedParams.update(this.midiMap[index][0], 'on');
+    });
+
+    this.midiTimeout = setTimeout(() => {
+      this.triggerNextMidiNotes();
+    }, Math.random() * 2000 + 2000); // change every 2 to 4 seconds
+  }
+
   getIndexElapsedTime() {
-    return this.totalTime - timeline[this.index].start * 0.001;
+    // if we never start the timeline, this.index === -1
+    return (this.index < 0) ? 0 : (this.totalTime - timeline[this.index].start * 0.001);
   }
 };
 

@@ -33,7 +33,7 @@ export default class PlayerExperience extends Experience {
 
     // this.midi.addListener('NOTE_OFF', (pitch, velocity, msg) => {
     //   this.broadcast('player', null, 'note:off', pitch - keyboardOffset);
-    // });
+    // });    
 
     // defer state change to next beat
     this.sharedParams.addParamListener('global:state', (value) => {
@@ -53,6 +53,24 @@ export default class PlayerExperience extends Experience {
 
     this.timeline.on('countdown', (timeLeft) => {
       this.broadcast('player', null, 'global:time', timeLeft);
+    });
+
+    // sounds that sound ok on compass :
+    // 25, 26, 27, 28, 31, 32
+    // ==> let's say 27 28 31 32 are ok
+
+    this.timeline.midiMap.forEach((pair) => {
+      this.sharedParams.addParamListener(pair[0], (value) => {
+        if (value === 'on') {
+          this.broadcast('player', null, 'note:on', pair[1] - keyboardOffset);
+        } else if (value === 'off') {
+          this.broadcast('player', null, 'note:off', pair[1] - keyboardOffset);
+        }
+      });
+    });
+
+    this.sharedParams.addParamListener('compass:enableRandomMIDINotes', (value) => {
+      this.timeline.enableRandomMidiNotesGenerator(value === 'on');
     });
   }
 

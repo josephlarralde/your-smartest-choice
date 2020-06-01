@@ -6,14 +6,19 @@ const template = `
   <div class="foreground">
     <div class="section-top"></div>
     <div class="section-center">
+      <!--
       <% if (instructions !== 'none') { %>
       <p class="align-center"><%= instructions %></p>
       <% } %>
+      -->
     </div>
     <div class="section-bottom flex-middle">
       <!-- <p class="small">Use the compass to choose<br />your instrument</p> -->
       <!-- <p class="small">Turn the phone<br />360°</p> -->
-      <p class="small">Use the compass to <br /> choose the colour</p>
+      <% if (instructions !== 'none') { %>
+      <!-- <p class="small">Use the compass to <br /> choose the colour</p> -->
+      <p class="small"><%= instructions %></p>
+      <% } %>
     </div>
   </div>
 `;
@@ -256,7 +261,8 @@ class CompassState {
 
   _onInstructions(value) {
     this.view.model.instructions = value;
-    this.view.render('.section-center');
+    // this.view.render('.section-center');
+    this.view.render('.section-bottom');
   }
 }
 

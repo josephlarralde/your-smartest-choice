@@ -69,18 +69,34 @@
   justify-content: center;
   align-items: center;
   z-index: 10;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s, visibility 0.5s;
 }
 
 .credits {
   // margin: 2em;
+  position: absolute;
+  box-sizing: border-box;
   width: 100%;
   padding: 2em;
   text-align: center;
   background: rgba(0,0,0,0.5);
+
+  opacity: 1;
+  visibility: visible;
+  transition: visibility 0.5s;
+}
+
+.credits a {
+  text-decoration: none;
+  color: #f5c;
 }
 
 .credits.hidden, .credits-wrapper.hidden {
-  display: none;
+  // display: none;
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

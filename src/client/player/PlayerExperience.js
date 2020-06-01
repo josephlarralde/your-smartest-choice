@@ -12,6 +12,7 @@ import avoidTheRainConfig from '../../../data/avoid-the-rain-config.json';
 import instrumentalConfig from '../../../data/instrumental-config.json';
 
 // states
+import EmptyState from './states/EmptyState';
 import WaitState from './states/WaitState';
 import CompassState from './states/CompassState';
 import BalloonsCoverState from './states/BalloonsCoverState';
@@ -25,6 +26,7 @@ const audioContext = soundworks.audioContext;
 const client = soundworks.client;
 
 const states = {
+  empty: EmptyState,
   wait: WaitState,
   compass: CompassState,
   balloonsCover: BalloonsCoverState,
@@ -47,29 +49,62 @@ const viewTemplate = `
   </div>
   <canvas class="background"></canvas>
   <div class="credits-wrapper hidden">
+
     <div id="credits-1" class="credits small hidden">
+      <div class="bold big">
+        <a target="_blank" href="https://huihuicheng.com/">Huihui Cheng</a>
+      </div>
+      <br />
       <div class="bold normal">
-        Huihui Cheng <br />
         Your smartest choice
       </div>
       <br />
-      <span class="bold">Original application</span>
+      <div>
+        For 4 musicians, electronics and participating audience
+      </div>
+    </div>
+
+    <div id="credits-2" class="credits small hidden">
+      <span class="bold normal">Original application</span>
       <ul style="padding: 0;">
         <li>Benjamin Matuszewski</li>
         <li>Norbert Schnell</li>
-        <li>(IRCAM)</li>
+        <li><a target="_blank" href="https://ismm.ircam.fr/">IRCAM</a></li>
       </ul>
-      <span class="bold">Online adaptation</span>
-      <ul style="padding: 0;"><li> Joseph Larralde </li></ul>
+      <span class="bold normal">Online adaptation</span>
+      <ul style="padding: 0;">
+      <li><a target="_blank" href="https://www.josephlarralde.fr">Joseph Larralde</a></li>
+      </ul>
     </div>
-    <div id="credits-2" class="credits small hidden">
-      <span class="bold normal"> Ensemble Mosaik </span> <br />
-      Chatschatur Kanajan, Violin <br />
-      Karen Lorenz, Viola <br />
-      Christian Vogel, Clarinet <br />
-      Ernst Surberg, Piano <br /><br />
-      <img src="/images/prod-logo.png" style="width: 250px;" />
+
+    <div id="credits-3" class="credits small hidden">
+      This game is a simulation of the performance situation with an extract of the original piece as background music.
+      <br /> <br />
+      All the phones are synchronized to the score and play the piece in loop, so one could play as single or in groups.
+      <br /> <br />
+      Enjoy!
     </div>
+
+    <div id="credits-4" class="credits small hidden">
+      <span class="bold normal"> Ensemble Mosaik </span>
+      <br />
+      <br />
+      Chatschatur Kanajan, Violin
+      <br />
+      Karen Lorenz, Viola
+      <br />
+      Christian Vogel, Clarinet
+      <br />
+      Ernst Surberg, Piano
+      <br />
+      <br />
+      <br />
+      <img src="/images/prod-logo-1.png" style="width: 200px;" />
+      <br />
+      <br />
+      <img src="/images/prod-logo-2.png" style="width: 200px;" />
+    </div>
+
   </div>
   <div id="shared-visual-container" class="background"></div>
   <div id="state-container" class="foreground"></div>
@@ -128,6 +163,7 @@ class PlayerExperience extends soundworks.Experience {
 
     // THIS ALLOWS TO FORCE THE USERS TO WAIT FOR THE PIECE TO START TO BE ABLE TO JOIN :
     this.waitForStartToJoin = true;
+    // this.waitForStartToJoin = false;
 
     // configurations
     this.sharedSynthConfig = sharedSynthConfig;
@@ -244,7 +280,7 @@ class PlayerExperience extends soundworks.Experience {
       this.$muteBtn = document.querySelector('#mute');
       this.$muteBtn.addEventListener('touchstart', () => {
         const active = this.$muteBtn.classList.contains('on');
-        console.log('active : ' + (active ? 'yes' : 'no'));
+        // console.log('active : ' + (active ? 'yes' : 'no'));
 
         if (active) {
           this.$muteBtn.classList.remove('on');
@@ -258,6 +294,15 @@ class PlayerExperience extends soundworks.Experience {
       this.$creditsWrapper = document.querySelector('.credits-wrapper');
       this.$credits1 = document.querySelector('#credits-1');
       this.$credits2 = document.querySelector('#credits-2');
+      this.$credits3 = document.querySelector('#credits-3');
+      this.$credits4 = document.querySelector('#credits-4');
+
+      this.$credits = [
+        this.$credits1,
+        this.$credits2,
+        this.$credits3,
+        this.$credits4
+      ];
 
       // audio api
       this.mute = audioContext.createGain();
@@ -288,6 +333,8 @@ class PlayerExperience extends soundworks.Experience {
 
       // @todo - revise all this, this is far from really efficient
       this.receive('note:on', (pitch) => {
+        if (this.currentState === 'wait') return;
+
         const res = this.sharedSynth.noteOn(pitch);
 
         if (res !== null)
@@ -317,8 +364,8 @@ class PlayerExperience extends soundworks.Experience {
       this.sharedParams.addParamListener('global:shared-visual', this._onSharedVisualTrigger);
 
       this.receive('timeline:position', (index, totalTime) => {
-        console.log(index);
-        console.log(totalTime);
+        // console.log(index);
+        // console.log(totalTime);
         this._playInstrumentalPart(index, totalTime);
       });
 
@@ -357,23 +404,34 @@ class PlayerExperience extends soundworks.Experience {
   }
 
   showCreditsPage(pageId = 0) {
-    if (pageId === 1 && this.currentState === 'wait') {
-      this.$credits2.classList.add('hidden');
+    this.$credits.forEach(c => { c.classList.add('hidden'); });
+
+    if (pageId === 1 && this.currentState === 'empty') {
+      // this.$credits2.classList.add('hidden');
       this.$credits1.classList.remove('hidden');
       this.$creditsWrapper.classList.remove('hidden');
-    } else if (pageId === 2 && this.currentState === 'scores') {
-      this.$credits1.classList.add('hidden');
+    } else if (pageId === 2 && this.currentState === 'empty') {
       this.$credits2.classList.remove('hidden');
       this.$creditsWrapper.classList.remove('hidden');
+    } else if (pageId === 3 && this.currentState === 'empty') {
+      this.$credits3.classList.remove('hidden');
+      this.$creditsWrapper.classList.remove('hidden');
+    } else if (pageId === 4 && this.currentState === 'scores') {
+      // this.$credits1.classList.add('hidden');
+      this.$credits4.classList.remove('hidden');
+      this.$creditsWrapper.classList.remove('hidden');
     } else {
+      // this.$credits1.classList.add('hidden');
+      // this.$credits2.classList.add('hidden');
       this.$creditsWrapper.classList.add('hidden');
     }
   }
 
   _playInstrumentalPart(index, bufferOffset = 0) {
-    console.log('playing part ' + index);
-    // const index = Math.floor(Math.random() * this.backgroundBuffers.length);
-    const buffer = this.audioBufferManager.get('instrumental-music')[index];
+    if (index < 1) return;
+    // console.log('playing part ' + index);
+    // index - 1 because first state doesn't have music
+    const buffer = this.audioBufferManager.get('instrumental-music')[index - 1];
     // const buffer = this.backgroundBuffers[index];
     const duration = buffer.duration - bufferOffset;
     const now = audioContext.currentTime;
@@ -394,7 +452,7 @@ class PlayerExperience extends soundworks.Experience {
   }
 
   _onTouchStart(e) {
-    console.log('touched !')
+    // console.log('touched !')
   }
 
   _setVolume(value) {
@@ -402,7 +460,7 @@ class PlayerExperience extends soundworks.Experience {
   }
 
   _setState(name) {
-    console.log('setting state ' + name);
+    // console.log('setting state ' + name);
     const ctor = states[name];
 
     if (!ctor)

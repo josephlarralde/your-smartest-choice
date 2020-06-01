@@ -181,7 +181,8 @@ class KillTheBalloonsState {
 
   enter() {
     this.view = new KillTheBalloonsView(template, {
-      showInstructions: true,
+      // showInstructions: true,
+      showInstructions: false,
       score: Object.assign({}, this.globalState.score),
       showText: 'none',
       clickColor: '',
@@ -204,12 +205,12 @@ class KillTheBalloonsState {
     // init spawn
     this._spawnBalloon();
 
-    // this hides "Hit the balloons !" text
-    setTimeout(() => {
-      this.view.model.showInstructions = false;
-      this.view.render('.section-center');
-    }, 3000);
+    // this hides "Hit the balloons !" text :
 
+    // setTimeout(() => {
+    //   this.view.model.showInstructions = false;
+    //   this.view.render('.section-center');
+    // }, 3000);
 
     const sharedParams = this.experience.sharedParams;
     sharedParams.addParamListener('killTheBalloons:samplesSet', this._onSamplesSet);

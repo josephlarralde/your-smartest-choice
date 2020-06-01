@@ -61,7 +61,7 @@ sharedParams.addText('numPlayers', '# players', '0');
 // globals
 // --------------------------------------
 sharedParams.addNumber('global:volume', 'Volume', 0, 2, 0.001, 1);
-sharedParams.addEnum('global:state', 'State', ['wait', 'compass', 'balloonsCover', 'killTheBalloons', 'intermezzo', 'avoidTheRain', 'scores', 'end'], 'wait');
+sharedParams.addEnum('global:state', 'State', ['wait', 'empty', 'compass', 'balloonsCover', 'killTheBalloons', 'intermezzo', 'avoidTheRain', 'scores', 'end'], 'wait');
 sharedParams.addNumber('global:time', 'Time', 0, +Infinity, 0.001, 0);
 
 // --------------------------------------
@@ -80,7 +80,8 @@ sharedParams.addEnum('balloonCover:explode', 'BalloonCover - explode', ['none', 
 // --------------------------------------
 sharedParams.addText('compass:title', '&nbsp;', 'COMPASS');
 // sharedParams.addEnum('compass:instructions', 'Compass - instructions', ['none', 'Walk around', 'Stand still', 'Be quiet', 'Listen around'], 'none');
-sharedParams.addEnum('compass:instructions', 'Compass - instructions', ['none', 'Use the compass to choose the colour'], 'none');
+sharedParams.addEnum('compass:instructions', 'Compass - instructions', ['none', 'Use the compass to <br> choose the colour'], 'none');
+sharedParams.addEnum('compass:enableRandomMIDINotes', 'Compass - enable random MIDI notes', [ 'off', 'on' ], 'off');
 
 // --------------------------------------
 // kill the balloons
@@ -91,7 +92,7 @@ sharedParams.addNumber('killTheBalloons:spawnInterval', 'KillTheBalloons - spawn
 sharedParams.addNumber('killTheBalloons:sizeDiversity', 'KillTheBalloons - sizeDiversity', 0, 1, 0.001, 0);
 
 // sharedParams.addEnum('killTheBalloons:showText', 'KillTheBalloons - showText', ['none', 'On tempo!', 'da da dadada', 'Follow the Rhythm', 'Create a melody'], 'none');
-sharedParams.addEnum('killTheBalloons:showText', 'KillTheBalloons - showText', ['none', 'Create your rhythm', 'Random colour', 'In tempo'], 'none');
+sharedParams.addEnum('killTheBalloons:showText', 'KillTheBalloons - showText', ['none', 'Hit the balloons!', 'Create your rhythm', 'In tempo'], 'none');
 
 sharedParams.addEnum('killTheBalloons:clickColorText', 'killTheBalloons - text "click the"', ['none', 'blue', 'pink', 'yellow', 'red', 'random'], 'none');
 
@@ -123,6 +124,25 @@ sharedParams.addNumber('score:yellow:transfertRatio', 'Score - Yellow - transfer
 sharedParams.addNumber('score:red:transfertRatio', 'Score - Red - transfertRatio', 0, 1, 0.01, 0);
 sharedParams.addEnum('score:explode', 'Score - Explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
 
+// --------------------------------------
+// MIDI
+// --------------------------------------
+sharedParams.addText('midi:title', '&nbsp;', 'MIDI');
+sharedParams.addEnum('midi:note:01', 'MIDI - note 1', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:02', 'MIDI - note 2', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:03', 'MIDI - note 3', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:04', 'MIDI - note 4', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:05', 'MIDI - note 5', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:06', 'MIDI - note 6', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:07', 'MIDI - note 7', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:08', 'MIDI - note 8', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:09', 'MIDI - note 9', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:10', 'MIDI - note 10', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:11', 'MIDI - note 11', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:12', 'MIDI - note 12', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:13', 'MIDI - note 13', ['off', 'on'], 'off');
+sharedParams.addEnum('midi:note:14', 'MIDI - note 14', ['off', 'on'], 'off');
+
 // ----------------------------------------------------
 // run application
 // ----------------------------------------------------
@@ -132,5 +152,3 @@ const experience = new PlayerExperience('player', midiConfig, winnersResults);
 const controller = new ControllerExperience('controller');
 
 soundworks.server.start();
-// timeline.start();
-

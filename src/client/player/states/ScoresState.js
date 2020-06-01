@@ -331,11 +331,14 @@ class ScoresState {
     sharedParams.addParamListener('score:explode', this._onExplode);
 
     this.creditsTimeout = setTimeout(() => {
-      this.experience.showCreditsPage(2);
+      this.experience.showCreditsPage(4);
     }, 7000);
   }
 
   exit() {
+    clearTimeout(this.creditsTimeout);
+    this.experience.showCreditsPage(0);
+
     this.view.$el.classList.remove('foreground');
     this.view.$el.classList.add('background');
 
@@ -351,8 +354,6 @@ class ScoresState {
     sharedParams.removeParamListener('score:explode', this._onExplode);
 
     this.experience.removeListener('global:score', this._onGlobalScoreResponse);
-    clearTimeout(this.creditsTimeout);
-    this.experience.showCreditsPage(0);
   }
 
   _onGlobalScoreResponse(globalScore) {

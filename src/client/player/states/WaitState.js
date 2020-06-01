@@ -148,10 +148,12 @@ class WaitState {
     console.log(`${min} m ${sec} s`);
     console.log(this._showingCredits);
 
-    if (min === 0 && sec <= 30 && !this._showingCredits) {
+    /*
+    if (min === 0 && sec <= 15 && !this._showingCredits) {
       this.experience.showCreditsPage(1);
       this._showingCredits = true;
     }
+    //*/
     
     if (!this.view || !this.view.$el.querySelector('.info')) return;
 

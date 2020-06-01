@@ -58,6 +58,7 @@ p {
 // default container of the application
 #container {
   position: relative;
+  overflow-x: hidden;
 }
 
 .foreground {
